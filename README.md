@@ -30,6 +30,7 @@ Aggregation Pipeline Operators
 <br>
 Aggregation $group Operator
 <br>
+Aggregation $lookUp Operator 
 <br>
 <br>
 <br>
