@@ -32,12 +32,19 @@ Aggregation $group Operator
 <br>
 Aggregation $lookUp Operator 
 <br>
+$bucket & $bucketAuto Operator
 <br>
+$addFields & $unwind Operator
 <br>
+$out $merge & $unionWith Operator
 <br>
+$facet & $fill Operator
 <br>
+Arithmetic Operators
 <br>
+ String Operators
 <br>
+Date Operators
 <br>
 <br>
 <br>
