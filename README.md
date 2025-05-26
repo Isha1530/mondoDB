@@ -58,4 +58,6 @@ Indexes
 <br>
 Import JSON 
 <br>
+Database Backup and Restore
 <br>
+Authentication & User Management
