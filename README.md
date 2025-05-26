@@ -48,6 +48,7 @@ Date Operators
 <br>
 Array Operators
 <br>
+Type Operators
 <br>
 <br>
 <br>
