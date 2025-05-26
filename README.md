@@ -52,6 +52,7 @@ Type Operators
 <br>
 Conditional Operators
 <br>
+Capped Collection
 <br>
 <br>
 <br>
