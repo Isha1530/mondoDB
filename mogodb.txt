@@ -1,0 +1,3155 @@
+database: 
+	show dbs
+	use db_name
+	db.dropDatabase()
+
+
+
+
+
+collection:
+	db.createCollection("cl_name")
+	db.ocl_name.renameCollection("ncl_name")
+	db.cl_name.drop()
+	show collections
+
+
+
+
+
+Document:
+	db.cl_name.insertOne({name:"isha" , age:20, course:"BE"})
+	db.cl_name.insertMany([{name:"isha" , age:20, course:"BE"},{name:"ISHA" , age:20, course:"BE"}])
+
+
+
+
+
+JSON validator
+
+db.createCollection("students",{
+	validator:{
+		$jsonSchema:{
+			title: "Student Object Validation",
+			required: ["name","age","course"],
+			properties:{
+				name:{
+				     bsonType: "string",
+				     description : "name must be string and required",
+				},
+				age:{
+				     bsonType: "int",
+			             minimum : 5,
+				     maximum : 60,
+				     description : "int must be number and required",
+				},
+				course:{
+				     bsonType: "string",
+				     enum : ["BCA","BE","BSC"],
+				     description : "course must be string and required and it can be BCA,BE,BSC",
+				}
+			}
+		}
+	}
+});
+
+db.runCommand({
+	collMode : "collction_name",
+	validator:{
+		$jsonSchema:{
+			title: "Student Object Validation",
+			required: ["name","age","course"],
+			properties:{
+				name:{
+				     bsonType: "string",
+				     description : "name must be string and required",
+				},
+				age:{
+				     bsonType: "int",
+			             minimum : 5,
+				     maximum : 60,
+				     description : "int must be number and required",
+				},
+				course:{
+				     bsonType: "string",
+				     enum : ["BCA","BE","BSC"],
+				     description : "course must be string and required and it can be BCA,BE,BSC",
+				}
+			}
+		}
+	}
+
+});
+
+
+
+
+
+
+
+
+Update Document:
+		db.cl_name.updateOne({name: "isha"},{$set:{age : 21 , name :"Isha" }})
+		// for same key
+		db.cl_name.updateMany({name: "Isha"},{$set:{course : "B.tech" }})
+		
+
+		$set : update vaue
+		$unset : remove field
+		$inc  increment num value
+		$rename : rename field
+		$mul : multipliesvalue
+		$currentDate : set current date
+		$max
+		$min
+		//in array
+		$push : ad  lement
+		$pop : remove element
+		$pull : remove all elements
+		$addToSet : adds ditinct elements
+
+
+
+
+
+
+
+replace document:
+		db.cl_name.replaceOne({ _id: ObjectId('682ef950010354db1cb5f8ad')},{name:"Preet",age:17,course:"BE",coding_skills:["C++","JAVA"]})
+
+
+
+
+
+
+
+
+Delete Document :
+		db._cl_name.deleteOne({field : "value"})
+		db._cl_name.deleteMany({field : "value"})
+		db.cl_name.deleteMany({})
+
+
+
+
+
+
+
+read Document :
+		db.cl_name.find()
+		db.cl_name.find({field : "value"})
+		db.cl_name.findOne({field : "value"})
+
+		// which field we want to show
+		db.cl_name.find({field : value}).projection({field1 : 1,field2 : 1,field : 0} )
+		db.cl_name.find({field : "value"},{field1 : 1,field2 : 1,field : 0})
+
+		//methods
+		db.cl_name.find().count();  // gives no of records
+		db.cl_name.find().sort({field : 1});  //1 for ascending -1 for descending
+		db.cl_name.find().limit(3) // gives limited no of record
+		db.cl_name.find().limit(3).skip(3) // skips 3 records and then show 4,5,6 record if skip(1) so showing 2,3,4
+
+  
+
+
+
+
+
+
+
+Comparison Operators :
+			db.cl_name.find({age :{$eq : value}})
+
+			db.cl_name.updateMany({age : {$eq : vale}},{$set : {course : "value"}})
+
+
+			db.deleteMany({age : {$eq : value}})
+
+
+			$eq  // equal
+			$ne  // not equal
+			$gt  // greater than
+			$gte // greater than and equal
+			$lt  // less than
+			$lte  // less than and equal
+			$in   //within array
+			$nin  // not in array
+
+
+
+
+
+
+
+
+
+logical Operator :
+
+		db.cl_name.find({$and : [{age :{$gt:15}},{age :{$lt:19}}]})
+		
+
+		db.cl_name.find({$and : [{age :{$gt:15}},{age :{$lt:19}}]},{Projection})
+
+
+		db.cl_name.find({age : {$not : {$gt : 18}}},{_id :0,name:1,age:1})
+
+		db.cl_name.deleteMany({$and : [{age :{$gt:15}},{age :{$lt:19}}]})
+
+
+		$and : when both match
+		$or : if one match and both
+		$nor : both fail
+		$not : gives alternative
+
+
+
+
+
+
+
+
+
+Element Operator:
+
+		db.cl_name.find({skills : {$exists : false}})
+
+		db.cl_name.find({age : {$type : "string"}})
+
+		db.cl_name.find({age : {$type : ["string","int"]}}) // for multi type
+
+
+
+		$exists : have or not
+		$type : specified type doc
+
+
+
+
+
+
+
+
+
+
+
+
+Evaluation Query Operators:
+
+regular expression  $regex  // matches string fields to a pattern
+
+		db.students.find({name :{$regex : "isha"}})
+		db.students.find({name :{$regex : /Isha/i}}) // not case sensitive
+		db.students.find({name :{$regex : "ha$"}})
+		db.students.find({name :{$regex : "^A"}})
+
+expression  	$expr   // allows field comparisons within doc
+
+		db.usage.find({$expr:{$gt:["$budget",{$multiply:["$spent",1.2]}]}})
+		db.usage.find({$expr:{$gt:["$spent","$budget"]}})
+
+modulo		$mod	// find condition matches show that doc
+
+		db.usage.find({spent:{$mod:[6,0]}})
+		$jsonSchema // validate doc against the given JSON Schema
+
+
+
+
+
+
+
+
+
+1)findOneAndUpdate() :
+
+	db.students.findOneAndUpdate({name:"Isha"},{$set:{age : 21}})
+
+	db.students.findOneAndUpdate({name:"Isha"},{$set:{age : 20}},{returnDocument:"after"})
+
+	db.students.findOneAndUpdate({name:"Isha"},{$set:{age : 20}},{returnDocument:"after",projection:{name:1,age:1,_id:0}})
+
+	db.students.findOneAndUpdate({name:"tisha"},{$set:{age : 20,course:"BSC"}},{returnDocument:"after",projection:{name:1,age:1,_id:0},upsert:true})
+
+	db.students.findOneAndUpdate({name:"tisha"},{$set:{course:"BE"}},{sort : {age:-1}})
+
+
+
+
+2)findOneAndReplac()
+
+	db.students.findOneAndReplace({name:"Isha"},{name:"Ishu",age:21,course:"BE"},{returnDocument : "after"})
+
+
+
+
+
+3)findOneAndDelete()
+
+	db.students.findOneAndDelete({name:"tisha"},{projection : {name:1},sort:{age:-1}})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Aggregation Pipeline Operators:
+			$match
+			$count
+			$sort
+			$sortByCount
+			$project
+			$limit
+			$skip
+			$sample
+
+db.students.aggregate([{$match : {course:"BE"}}])
+
+db.students.aggregate([{$match : {age :{$gt:18}}}])
+
+db.students.aggregate([{$match : {$and:[{age:{$gt : 18}},{course:"BSC"}]}}])
+
+db.students.aggregate([{$match : {age:{$gt : 18}}},{$count : "name"}])
+
+db.students.aggregate([{$match : {age:{$gt : 18}}},{$sort:{age:1}}])
+
+db.students.aggregate([{$match : {age:{$gt : 18}}},{$sort:{age:1,name:1}}])
+
+db.students.aggregate([{$sort:{age:1,name:1}},{$project:{name:1,age:1,_id:0,isvalidage:{$gt:["$age",20]}}}])
+
+db.students.aggregate([{$sortByCount:"$course"}])
+
+db.students.aggregate([{$sort:{age:1,name:1}},{$project:{name:1,age:1,_id:0}},{$skip:1},{$limit:3}])
+
+db.students.aggregate([{$sample:{size:3}}])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Aggregation $group Operator:
+
+		accumulator :
+			$sum
+			$avg
+			$median
+			$max
+			$min
+			$count
+			$push
+			$addToset
+			$first
+			$last
+			$top
+			$topN
+			$bottom
+			$bottomN
+
+db.students.aggregate([{$group:{_id:"$course"}}])
+[ { _id: 'BCA' }, { _id: 'BSC' }, { _id: 'BE' } ]
+
+
+db.students.aggregate([{$group:{_id:"$course"}}])
+[ { _id: 'BCA' }, { _id: 'BSC' }, { _id: 'BE' } ]
+school> db.students.aggregate([{$group:{_id:"$course",count:{$sum:1}}}])
+[
+  { _id: 'BCA', count: 1 },
+  { _id: 'BSC', count: 2 },
+  { _id: 'BE', count: 2 }
+
+
+db.students.aggregate([{$match:{age:{$gt:18}}},{$group:{_id:"$course",count:{$sum:1}}}])
+[ { _id: 'BE', count: 2 }, { _id: 'BSC', count: 2 } ]
+
+
+db.students.aggregate([{$match:{age:{$gt:18}}},{$group:{_id:"$course",count:{$count:{}}}}])
+[ { _id: 'BE', count: 2 }, { _id: 'BSC', count: 2 } ]
+
+
+db.students.aggregate([{$group:{_id:"$course",count:{$count:{}}}},{$sort:{count:1}}])
+
+
+db.students.aggregate([{$group:{_id:"$course",std_name:{$push:"$name"}}}])
+[
+  { _id: 'BE', std_name: [ 'Ishu', 'Akshay' ] },
+  { _id: 'BCA', std_name: [ 'Nisha' ] },
+  { _id: 'BSC', std_name: [ 'Krisha', 'tisha' ] }
+
+
+db.students.aggregate([{$group:{_id:"$age",std_name:{$push:"$name"}}}])
+[
+  { _id: 19, std_name: [ 'Krisha', 'Akshay' ] },
+  { _id: 20, std_name: [ 'tisha' ] },
+  { _id: 21, std_name: [ 'Ishu' ] },
+  { _id: 15, std_name: [ 'Nisha' ] }
+
+
+db.students.aggregate([{$group:{_id:"$age",std_name:{$push:"$$ROOT"}}}])
+
+
+
+db.students.aggregate([{$group:{_id:"$age",std_name:{$addToSet:"$$ROOT"}}}])
+
+
+
+db.students.aggregate([{$group:{_id:"$course",max_age:{$max:"$age"}}}])
+[
+  { _id: 'BE', max_age: 21 },
+  { _id: 'BCA', max_age: 15 },
+  { _id: 'BSC', max_age: 20 }
+]
+
+
+db.students.aggregate([{$group:{_id:"$course",min_age:{$min:"$age"}}}])
+[
+  { _id: 'BE', min_age: 19 },
+  { _id: 'BCA', min_age: 15 },
+  { _id: 'BSC', min_age: 19 }
+
+
+
+db.students.aggregate([{$group:{_id:"$course",avg_age:{$avg:"$age"}}}])
+[
+  { _id: 'BE', avg_age: 20 },
+  { _id: 'BCA', avg_age: 15 },
+  { _id: 'BSC', avg_age: 19.5 }
+
+
+db.students.aggregate([{$group:{_id:null,avg_age:{$avg:"$age"}}}])
+[ { _id: null, avg_age: 18.8 } ]
+
+
+db.students.aggregate([{$group:{_id:null,median_age:{$median:{input: "$age",method:'approximate'}}}}])
+[ { _id: null, median_age: 19 } ]
+
+
+db.students.aggregate([{$group:{_id:"$course",median_age:{$median:{input: "$age",method:'approximate'}}}}])
+[
+  { _id: 'BE', median_age: 19 },
+  { _id: 'BCA', median_age: 15 },
+  { _id: 'BSC', median_age: 19 }
+]
+
+
+db.students.aggregate([{$group:{_id:"$course",first_age:{$first:"$name"}}}])
+[
+  { _id: 'BCA', first_age: 'Nisha' },
+  { _id: 'BSC', first_age: 'Krisha' },
+  { _id: 'BE', first_age: 'Ishu' }
+
+
+db.students.aggregate([{$group:{_id:"$course",last_age:{$last:"$name"}}}])
+[
+  { _id: 'BSC', last_age: 'tisha' },
+  { _id: 'BE', last_age: 'Akshay' },
+  { _id: 'BCA', last_age: 'Nisha' }
+
+
+
+db.students.aggregate([{$group:{_id:"$course",last_age:{$top:{output:["$name","$age"],sortBy:{"age":1}}}}}])
+[
+  { _id: 'BE', last_age: [ 'Akshay', 19 ] },
+  { _id: 'BCA', last_age: [ 'Nisha', 15 ] },
+  { _id: 'BSC', last_age: [ 'Krisha', 19 ] }
+]
+
+
+
+db.students.aggregate([{$group:{_id:"$course",last_age:{$topN:{output:["$name","$age"],sortBy:{"age":1},n:2}}}}])
+[
+  { _id: 'BE', last_age: [ [ 'Akshay', 19 ], [ 'Ishu', 21 ] ] },
+  { _id: 'BCA', last_age: [ [ 'Nisha', 15 ] ] },
+  { _id: 'BSC', last_age: [ [ 'Krisha', 19 ], [ 'tisha', 20 ] ] }
+]
+
+
+db.students.aggregate([{$group:{_id:"$course",last_age:{$bottom:{output:["$name","$age"],sortBy:{"age":1}}}}}])
+[
+  { _id: 'BSC', last_age: [ 'tisha', 20 ] },
+  { _id: 'BE', last_age: [ 'Ishu', 21 ] },
+  { _id: 'BCA', last_age: [ 'Nisha', 15 ] }
+]
+
+
+db.students.aggregate([{$group:{_id:"$course",last_age:{$bottomN:{output:["$name","$age"],sortBy:{"age":1},n:3}}}}])
+[
+  { _id: 'BSC', last_age: [ [ 'Krisha', 19 ], [ 'tisha', 20 ] ] },
+  { _id: 'BE', last_age: [ [ 'Akshay', 19 ], [ 'Ishu', 21 ] ] },
+  { _id: 'BCA', last_age: [ [ 'Nisha', 15 ] ] }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+Aggregation $lookUp Operator :
+			
+			db.library.aggregate([{$lookup:{from:"students",localField:"std_id",foreignField:"_id",as:"student"}}])
+[
+  {
+    _id: 1,
+    book: 'C++',
+    std_id: [ 1, 4 ],
+    student: [
+      { _id: 4, name: 'Harsh', course: 'BE', age: 20 },
+      { _id: 1, name: 'isha', course: 'BE', age: 20 }
+    ]
+  },
+  {
+    _id: 2,
+    book: 'maths',
+    std_id: 3,
+    student: [ { _id: 3, name: 'krisha', course: 'BSC', age: 19 } ]
+  },
+  {
+    _id: 3,
+    book: 'Chemistry',
+    std_id: 2,
+    student: [ { _id: 2, name: 'akshay', course: 'BE', age: 19 } ]
+  }
+]
+
+
+
+
+	db.students.aggregate([{$lookup:{from:"library",localField:"_id",foreignField:"std_id",as:"lib"}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    course: 'BE',
+    age: 20,
+    lib: [ { _id: 1, book: 'C++', std_id: [ 1, 4 ] } ]
+  },
+  {
+    _id: 2,
+    name: 'akshay',
+    course: 'BE',
+    age: 19,
+    lib: [ { _id: 3, book: 'Chemistry', std_id: 2 } ]
+  },
+  {
+    _id: 3,
+    name: 'krisha',
+    course: 'BSC',
+    age: 19,
+    lib: [ { _id: 2, book: 'maths', std_id: 3 } ]
+  },
+  {
+    _id: 4,
+    name: 'Harsh',
+    course: 'BE',
+    age: 20,
+    lib: [ { _id: 1, book: 'C++', std_id: [ 1, 4 ] } ]
+  },
+  { _id: 5, name: 'neel', course: 'BCA', age: 20, lib: [] }
+]
+
+
+
+	db.students.aggregate([{$lookup:{from:"library",localField:"_id",foreignField:"std_id",as:"lib"}},{$unwind:"$lib"}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    course: 'BE',
+    age: 20,
+    lib: { _id: 1, book: 'C++', std_id: [ 1, 4 ] }
+  },
+  {
+    _id: 2,
+    name: 'akshay',
+    course: 'BE',
+    age: 19,
+    lib: { _id: 3, book: 'Chemistry', std_id: 2 }
+  },
+  {
+    _id: 3,
+    name: 'krisha',
+    course: 'BSC',
+    age: 19,
+    lib: { _id: 2, book: 'maths', std_id: 3 }
+  },
+  {
+    _id: 4,
+    name: 'Harsh',
+    course: 'BE',
+    age: 20,
+    lib: { _id: 1, book: 'C++', std_id: [ 1, 4 ] }
+  }
+]
+
+
+
+	db.library.aggregate([{$lookup:{from:"students",localField:"std_id",foreignField:"_id",as:"student"}},{$replaceRoot:{newRoot:{$mergeObjects:[{$arrayElemAt:["$student",0]},"$$ROOT"]}}},{$project:{student:0}}])
+[
+  {
+    _id: 1,
+    name: 'Harsh',
+    course: 'BE',
+    age: 20,
+    book: 'C++',
+    std_id: [ 1, 4 ]
+  },
+  {
+    _id: 2,
+    name: 'krisha',
+    course: 'BSC',
+    age: 19,
+    book: 'maths',
+    std_id: 3
+  },
+  {
+    _id: 3,
+    name: 'akshay',
+    course: 'BE',
+    age: 19,
+    book: 'Chemistry',
+    std_id: 2
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$bucket & $bucketAuto Operator:
+			
+
+	 db.students.aggregate([{$bucket:{groupBy:"$age",boundaries:[10,30,50,70],default:"Other",output:{count:{$sum:1}}}}])
+[ { _id: 10, count: 6 }, { _id: 30, count: 3 }, { _id: 50, count: 1 } ]
+
+
+
+	db.students.aggregate([{$bucket:{groupBy:"$age",boundaries:[10,30,50,70],default:"Other",output:{count:{$sum:1}}}}])
+[ { _id: 10, count: 6 }, { _id: 30, count: 3 }, { _id: 50, count: 1 } ]
+school> 
+
+
+db.students.aggregate([{$match:{course:"BE"}},{$bucket:{groupBy:"$age",boundaries:[10,30,50,70],default:"Other",output:{count:{$sum:1}}}}])
+[ { _id: 10, count: 4 }, { _id: 30, count: 1 } ]
+school> 
+
+
+db.students.aggregate([{$match:{course:"BCA"}},{$bucket:{groupBy:"$age",boundaries:[10,30,50,70],default:"Other",output:{count:{$sum:1}}}}])
+[ { _id: 10, count: 1 }, { _id: 30, count: 1 }, { _id: 50, count: 1 } ]
+school> 
+
+
+db.students.aggregate([{$match:{course:"BSC"}},{$bucket:{groupBy:"$age",boundaries:[10,30,50,70],default:"Other",output:{count:{$sum:1}}}}])
+[ { _id: 10, count: 1 }, { _id: 30, count: 1 } ]
+
+
+db.students.aggregate([{$bucketAuto:{groupBy:"$age",buckets:10}}])
+[
+  { _id: { min: 19, max: 20 }, count: 2 },
+  { _id: { min: 20, max: 25 }, count: 3 },
+  { _id: { min: 25, max: 35 }, count: 1 },
+  { _id: { min: 35, max: 40 }, count: 1 },
+  { _id: { min: 40, max: 45 }, count: 1 },
+  { _id: { min: 45, max: 55 }, count: 1 },
+  { _id: { min: 55, max: 55 }, count: 1 }
+]
+
+
+
+db.students.aggregate([{$bucketAuto:{groupBy:"$age",buckets:10,output:{count:{$sum:1},avg_age:{$avg:"$age"}}}}])
+[
+  { _id: { min: 19, max: 20 }, count: 2, avg_age: 19 },
+  { _id: { min: 20, max: 25 }, count: 3, avg_age: 20 },
+  { _id: { min: 25, max: 35 }, count: 1, avg_age: 25 },
+  { _id: { min: 35, max: 40 }, count: 1, avg_age: 35 },
+  { _id: { min: 40, max: 45 }, count: 1, avg_age: 40 },
+  { _id: { min: 45, max: 55 }, count: 1, avg_age: 45 },
+  { _id: { min: 55, max: 55 }, count: 1, avg_age: 55 }
+]
+
+
+
+db.students.aggregate([{$bucketAuto:{groupBy:"$age",buckets:10,output:{count:{$sum:1},total_age:{$sum:"$age"}}}}])
+[
+  { _id: { min: 19, max: 20 }, count: 2, total_age: 38 },
+  { _id: { min: 20, max: 25 }, count: 3, total_age: 60 },
+  { _id: { min: 25, max: 35 }, count: 1, total_age: 25 },
+  { _id: { min: 35, max: 40 }, count: 1, total_age: 35 },
+  { _id: { min: 40, max: 45 }, count: 1, total_age: 40 },
+  { _id: { min: 45, max: 55 }, count: 1, total_age: 45 },
+  { _id: { min: 55, max: 55 }, count: 1, total_age: 55 }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$addFields & $unwind Operator:
+
+		db.students.aggregate([{$addFields:{f_name:{$concat:["$name"," ","$surname"]}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    course: 'BE',
+    age: 20,
+    surname: 'Prajapati',
+    marks: [ 40, 50, 60 ],
+    f_name: 'isha Prajapati'
+  },
+  {
+    _id: 2,
+    name: 'akshay',
+    course: 'BE',
+    age: 19,
+    surname: 'Patel',
+    marks: [ 45, 60, 30 ],
+    f_name: 'akshay Patel'
+  },
+  {
+    _id: 3,
+    name: 'krisha',
+    course: 'BSC',
+    age: 19,
+    surname: 'Surti',
+    marks: [ 34, 56, 30 ],
+    f_name: 'krisha Surti'
+  },
+
+
+
+	db.students.aggregate([{$addFields:{_id:{$concat:["$name"," ","$surname"]} }}])
+[
+  {
+    _id: 'isha Prajapati',
+    name: 'isha',
+    course: 'BE',
+    age: 20,
+    surname: 'Prajapati',
+    marks: [ 40, 50, 60 ]
+  },
+  {
+    _id: 'akshay Patel',
+    name: 'akshay',
+    course: 'BE',
+    age: 19,
+    surname: 'Patel',
+    marks: [ 45, 60, 30 ]
+  },
+  {
+    _id: 'krisha Surti',
+    name: 'krisha',
+    course: 'BSC',
+    age: 19,
+    surname: 'Surti',
+    marks: [ 34, 56, 30 ]
+  },
+
+
+	
+	db.students.aggregate([{$addFields:{_id:{$concat:["$name"," ","$surname"]},name:"$$REMOVE",surname:"$$REMOVE",total_marks:{$sum :"$marks"}}}])
+[
+  {
+    _id: 'isha Prajapati',
+    course: 'BE',
+    age: 20,
+    marks: [ 40, 50, 60 ],
+    total_marks: 150
+  },
+  {
+    _id: 'akshay Patel',
+    course: 'BE',
+    age: 19,
+    marks: [ 45, 60, 30 ],
+    total_marks: 135
+  },
+  {
+    _id: 'krisha Surti',
+    course: 'BSC',
+    age: 19,
+    marks: [ 34, 56, 30 ],
+    total_marks: 120
+  }
+
+
+	db.students.aggregate([{$addFields:{_id:{$concat:["$name"," ","$surname"]},name:"$$REMOVE",surname:"$$REMOVE",total_marks:{$sum :"$marks"},age:{$cond:{if:{$eq:["$age",40]},then:"$$REMOVE",else:"$age"}}}}])
+[
+  {
+    _id: 'isha Prajapati',
+    course: 'BE',
+    age: 20,
+    marks: [ 40, 50, 60 ],
+    total_marks: 150
+  },
+  {
+    _id: 'akshay Patel',
+    course: 'BE',
+    age: 19,
+    marks: [ 45, 60, 30 ],
+    total_marks: 135
+  },
+  {
+    _id: 'krisha Surti',
+    course: 'BSC',
+    age: 19,
+    marks: [ 34, 56, 30 ],
+    total_marks: 120
+  },
+  { _id: null, course: 'BE', age: 20, total_marks: 0 },
+  { _id: null, course: 'BCA', age: 20, total_marks: 0 },
+  { _id: null, course: 'BCA', total_marks: 0 },
+  { _id: null, course: 'BSC', age: 35, total_marks: 0 },
+  { _id: null, course: 'BE', age: 45, total_marks: 0 },
+  { _id: null, course: 'BCA', age: 55, total_marks: 0 },
+  { _id: null, course: 'BE', age: 25, total_marks: 0 }
+
+
+
+	 db.students.aggregate([{$addFields:{_id:{$concat:["$name"," ","$surname"]},name:"$$REMOVE",surname:"$$REMOVE",total_marks:{$sum :"$marks"},avg_marks:{$avg:"$marks"}}}])
+[
+  {
+    _id: 'isha Prajapati',
+    course: 'BE',
+    age: 20,
+    marks: [ 40, 50, 60 ],
+    total_marks: 150,
+    avg_marks: 50
+  },
+  {
+    _id: 'akshay Patel',
+    course: 'BE',
+    age: 19,
+    marks: [ 45, 60, 30 ],
+    total_marks: 135,
+    avg_marks: 45
+  },
+  {
+    _id: 'krisha Surti',
+    course: 'BSC',
+    age: 19,
+    marks: [ 34, 56, 30 ],
+    total_marks: 120,
+    avg_marks: 40
+  },
+
+
+
+	db.library.aggregate({$unwind:"$std_id"})
+[
+  { _id: 1, book: 'C++', std_id: 1 },
+  { _id: 1, book: 'C++', std_id: 4 },
+  { _id: 2, book: 'maths', std_id: 3 },
+  { _id: 3, book: 'Chemistry', std_id: 2 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$out $merge & $unionWith Operator :
+
+	db.students.aggregate([{$unionWith:{coll:"BE_std"}}])
+[
+  { _id: 1, name: 'Harsh', course: 'BE', age: 20 },
+  { _id: 2, name: 'nisha', course: 'BE', age: 45 },
+  { _id: 3, name: 'nitiksha', course: 'BE', age: 25 },
+  { _id: 1, city: 'ank', age: 20, course: 'BE', name: 'Harsh' },
+  { _id: 2, city: 'ank', age: 45, course: 'BE', name: 'nisha' },
+  { _id: 3, city: 'ank', age: 25, course: 'BE', name: 'nitiksha' }
+]
+
+
+
+	 db.students.aggregate([{$merge:{into:"BE_std",on:"_id",whenMatched:"merge",whenNotMatched:"insert"}}])
+
+school> db.students.find()
+[
+  { _id: 1, name: 'Harsh', course: 'BE', age: 20 },
+  { _id: 2, name: 'nisha', course: 'BE', age: 45 },
+  { _id: 3, name: 'nitiksha', course: 'BE', age: 25 }
+]
+school> db.BE_std.find()
+[
+  { _id: 1, city: 'ank', age: 20, course: 'BE', name: 'Harsh' },
+  { _id: 2, city: 'ank', age: 45, course: 'BE', name: 'nisha' },
+  { _id: 3, city: 'ank', age: 25, course: 'BE', name: 'nitiksha' }
+]
+
+
+	 db.students.aggregate({$match:{course:"BE"}},{$out:"BE_std"})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$facet & $fill Operator :
+
+
+	db.students.aggregate([{$facet:{topmarks:[{$project:{topmarks:{$max:"$marks"}}}],totalstudents:[{$group:{_id:"$course",count:{$sum:1}}},{$sort:{count:-1}}]}}])
+[
+  {
+    topmarks: [
+      { _id: 1, topmarks: 98 },
+      { _id: ObjectId('6831b60bf0ce8e2b42b5f899'), topmarks: 98 },
+      { _id: ObjectId('6831b60bf0ce8e2b42b5f89a'), topmarks: 95 },
+      { _id: ObjectId('6831b60bf0ce8e2b42b5f89b'), topmarks: 91 }
+    ],
+    totalstudents: [ { _id: 'BE', count: 3 }, { _id: 'BSC', count: 1 } ]
+  }
+]
+
+
+	db.students.aggregate([{$fill:{sortBy:{_id:1},output:{"marks":{method:"locf"}}}}])
+[
+  { _id: 1, name: 'isha', age: 20, course: 'BE', marks: 98 },
+  {
+    _id: ObjectId('6831b60bf0ce8e2b42b5f899'),
+    name: 'isha',
+    age: 20,
+    course: 'BE',
+    marks: 98
+  },
+  {
+    _id: ObjectId('6831bb33f0ce8e2b42b5f89f'),
+    name: 'akshay',
+    age: 19,
+    course: 'BE',
+    marks: 98
+  },
+  {
+    _id: ObjectId('6831bbadf0ce8e2b42b5f8a0'),
+    name: 'krisha',
+    age: 19,
+    course: 'BE',
+    marks: 98
+  },
+  {
+    _id: ObjectId('6831bbbdf0ce8e2b42b5f8a1'),
+    name: 'nisha',
+    age: 19,
+    course: 'BE',
+    marks: 20
+  }
+]
+
+		
+	db.students.aggregate([{$fill:{output:{"marks":{value:100}}}}])
+[
+  { _id: 1, name: 'isha', age: 20, course: 'BE', marks: 98 },
+  {
+    _id: ObjectId('6831b60bf0ce8e2b42b5f899'),
+    name: 'isha',
+    age: 20,
+    course: 'BE',
+    marks: 98
+  },
+  {
+    _id: ObjectId('6831b60bf0ce8e2b42b5f89b'),
+    name: 'krisha',
+    age: 19,
+    course: 'BSC',
+    marks: 91
+  },
+  {
+    _id: ObjectId('6831bb33f0ce8e2b42b5f89f'),
+    name: 'akshay',
+    age: 19,
+    course: 'BE',
+    marks: 100
+  }
+]
+
+
+partitionBy: separate by specific field
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Arithmetic Operators:
+
+		$add
+		$subtract
+		$multiply
+		$divide
+		$mod
+		$pow
+		$round
+		$sqrt
+		$abs
+		$ceil
+		$floor
+		$trunc
+
+
+
+
+	db.sales.aggregate([{$project:{p_name:1,price:1,quantity:1,sum:{$add:["$quantity","$price"]},sub:{$subtract:["$price","$quantity"]},multiply:{$multiply:["$price","$quantity"]},divide:{$divide:["$price","$quantity"]},mod:{$mod:["$price","$quantity"]},pow:{$pow:["$price","$quantity"]}}}])
+[
+  {
+    _id: 1,
+    p_name: 'clothes',
+    quantity: 5,
+    price: 4500,
+    sum: 4505,
+    sub: 4495,
+    multiply: 22500,
+    divide: 900,
+    mod: 0,
+    pow: Long('1845281250000000000')
+  },
+  {
+    _id: 2,
+    p_name: 'books',
+    quantity: 10,
+    price: 500,
+    sum: 510,
+    sub: 490,
+    multiply: 5000,
+    divide: 50,
+    mod: 0,
+    pow: 9.765625e+26
+  },
+  {
+    _id: 3,
+    p_name: 'AC',
+    quantity: 3,
+    price: 45000,
+    sum: 45003,
+    sub: 44997,
+    multiply: 135000,
+    divide: 15000,
+    mod: 0,
+    pow: Long('91125000000000')
+  }
+]
+
+
+
+
+	db.sales.aggregate([{$project:{result:{$sqrt:16},abs:{$abs:-9.6},round:{$round:8.4},ceil:{$ceil:5.6},floor:{$floor:4.6},trunc:{$trunc:7.8}}}])
+[
+  {
+    _id: 1,
+    result: 4,
+    abs: 9.6,
+    round: 8,
+    ceil: 6,
+    floor: 4,
+    trunc: 7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+String Operators:
+
+
+	$toString,  // value convert into string
+	$toUpperCase, //convert to uppercase
+	$toLowercase,  //convert to lowercase
+	$datefromstring, // gives date from string
+	$datetostring,  gives month etc from date
+	$replaceOne,  //replace first find
+	$replaceAll,  // replace one to another all contain
+	$trim, 	// remove space before after string
+	$ltrim, // remove left space means string before
+	$rtrim,  // after string space
+	$indexOfBytes, //string index
+	$indexOfCP,
+	$concat,  // concate two stringd
+	$split,    // split with given word/symbol/space
+	$strLenBytes, //find string length
+	$strLenCP, //length
+	$strcasecmp, //compare two strings
+	$substr,  // gives sub string
+	$substrBytes, //sub string 
+	$substrCP, //sub string
+	$regexFind, 
+	$regexFindAll, 
+	$regexMatch
+
+
+
+	
+	db.students.aggregate([{$project:{name:1,uppercase:{$toUpper:"$name"},lower:{$toLower:"$name"},lenth:{$strLenBytes:"$name"},l:{$strLenCP:"$name"},comparison:{$strcasecmp:["$name","isha"]},substring:{$substrBytes:["$name",0,3]}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    uppercase: 'ISHA',
+    lower: 'isha',
+    lenth: 4,
+    l: 4,
+    comparison: 0,
+    substring: 'ish'
+  },
+  {
+    _id: 2,
+    name: 'akshay',
+    uppercase: 'AKSHAY',
+    lower: 'akshay',
+    lenth: 6,
+    l: 6,
+    comparison: -1,
+    substring: 'aks'
+  },
+  {
+    _id: 3,
+    name: 'nisha',
+    uppercase: 'NISHA',
+    lower: 'nisha',
+    lenth: 5,
+    l: 5,
+    comparison: 1,
+    substring: 'nis'
+  },
+  {
+    _id: 4,
+    name: 'krunu',
+    uppercase: 'KRUNU',
+    lower: 'krunu',
+    lenth: 5,
+    l: 5,
+    comparison: 1,
+    substring: 'kru'
+  },
+  {
+    _id: 5,
+    name: 'lisha',
+    uppercase: 'LISHA',
+    lower: 'lisha',
+    lenth: 5,
+    l: 5,
+    comparison: 1,
+    substring: 'lis'
+  }
+]
+
+
+	
+
+
+	db.students.aggregate([{$project:{updatestring:{$replaceOne:{input:"$name",find:"sh",replacement:"hs"}}}}])
+[
+  { _id: 1, updatestring: 'ihsa' },
+  { _id: 2, updatestring: 'akhsay' },
+  { _id: 3, updatestring: 'nihsa' },
+  { _id: 4, updatestring: 'krunu' },
+  { _id: 5, updatestring: 'lihsa' }
+]
+
+
+
+	db.students.aggregate([{$project:{updatestring:{$replaceOne:{input:"$name",find:"a",replacement:"i"}}}}])
+[
+  { _id: 1, updatestring: 'ishi' },
+  { _id: 2, updatestring: 'ikshay' },
+  { _id: 3, updatestring: 'nishi' },
+  { _id: 4, updatestring: 'krunu' },
+  { _id: 5, updatestring: 'lishi' }
+]
+school> db.students.aggregate([{$project:{updatestring:{$replaceAll:{input:"$name",find:"a",replacement:"i"}}}}])
+[
+  { _id: 1, updatestring: 'ishi' },
+  { _id: 2, updatestring: 'ikshiy' },
+  { _id: 3, updatestring: 'nishi' },
+  { _id: 4, updatestring: 'krunu' },
+  { _id: 5, updatestring: 'lishi' }
+]
+
+
+	
+	db.students.aggregate([{$project:{split:{$split:["$dob"," "]}}}])
+[
+  { _id: 1, split: [ 'march', '15', '2005' ] },
+  { _id: 2, split: [ '2005-07-29' ] },
+  { _id: 3, split: [ 'march', '30', '2005' ] },
+  {
+    _id: 4,
+    split: [ 'WED', 'jan', '31', '12:05:28', '+03:30', '2005' ]
+  },
+  { _id: 5, split: [ 'march', '15', '2005' ] }
+]
+
+
+	 db.students.aggregate([{$project:{trim:{$ltrim:{input:"$name",chars:"  "}}}}])
+[
+  { _id: 1, trim: 'isha' },
+  { _id: 2, trim: 'akshay' },
+  { _id: 3, trim: 'nisha' },
+  { _id: 4, trim: 'krunu' },
+  { _id: 5, trim: 'lisha' }
+]
+
+
+school> db.students.aggregate([{$project:{name:1,date:{$dateFromString:{dateString:"$dob"}}}}])
+[
+  { _id: 1, name: 'isha', date: ISODate('2005-03-15T00:00:00.000Z') },
+  { _id: 2, name: 'akshay', date: ISODate('2005-07-29T00:00:00.000Z') },
+  { _id: 3, name: 'nisha', date: ISODate('2005-03-30T00:00:00.000Z') },
+  { _id: 4, name: 'krunu', date: ISODate('2005-02-02T08:35:28.000Z') },
+  { _id: 5, name: 'lisha', date: ISODate('2005-03-15T00:00:00.000Z') }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Date Operators :
+
+
+		$month, 
+
+db.students.aggregate([{$project:{month:{$month:"$dob"}}}])
+[ { _id: 1, month: 1 }, { _id: 2, month: 8 } ]
+
+
+		$week, 
+
+db.students.aggregate([{$project:{week:{$week:"$dob"}}}])
+[ { _id: 1, week: 2 }, { _id: 2, week: 30 } ]
+
+
+		$year,
+
+db.students.aggregate([{$project:{year:{$year:"$dob"}}}])
+[ { _id: 1, year: 2008 }, { _id: 2, year: 2009 } ]
+
+ 
+		$dayOfMonth, 
+
+db.students.aggregate([{$project:{name:1,dob:1,dayofmonth:{$dayOfMonth:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    dayofmonth: 15
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    dayofmonth: 1
+  }
+]
+
+		$dayOfWeek, 
+
+db.students.aggregate([{$project:{name:1,dob:1,dayofweek:{$dayOfWeek:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    dayofweek: 3
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    dayofweek: 7
+  }
+]
+
+
+		$dayOfYear, 
+
+db.students.aggregate([{$project:{name:1,dob:1,dayofyear:{$dayOfYear:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    dayofyear: 15
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    dayofyear: 213
+  }
+]
+
+
+		$hour, 
+		$minute, 
+		$second, 
+		$millisecond, 
+
+db.students.aggregate([{$project:{name:1,dob:1,hour:{$hour:"$dob"},min:{$minute:"$dob"},sec:{$second:"$dob"},msec:{$millisecond:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    hour: 8,
+    min: 15,
+    sec: 39,
+    msec: 789
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    hour: 5,
+    min: 30,
+    sec: 10,
+    msec: 125
+  }
+]
+
+
+		$dateAdd, 	
+
+db.students.aggregate([{$project:{name:1,dob:1,newdate:{$dateAdd:{startDate:"$dob",unit:"day",amount:5}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    newdate: ISODate('2008-01-20T08:15:39.789Z')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    newdate: ISODate('2009-08-06T05:30:10.125Z')
+  }
+]
+
+		$dateSubtract,
+
+db.students.aggregate([{$project:{name:1,dob:1,newdate:{$dateSubtract:{startDate:"$dob",unit:"day",amount:5}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    newdate: ISODate('2008-01-10T08:15:39.789Z')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    newdate: ISODate('2009-07-27T05:30:10.125Z')
+  }
+]
+
+		::units:year , 				quater,week,month,day,hour,minute,second,millisecod
+
+db.students.aggregate([{$project:{name:1,dob:1,newdate:{$dateSubtract:{startDate:"$dob",unit:"month",amount:5}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    newdate: ISODate('2007-08-15T08:15:39.789Z')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    newdate: ISODate('2009-03-01T05:30:10.125Z')
+  }
+]
+
+ 
+		$dateDiff, 
+
+db.students.aggregate([{$project:{name:1,dob:1,difference:{$dateDiff:{startDate:"$dob",endDate:ISODate("2025-12-31T00:00:00Z"),unit:"month"}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    difference: Long('215')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    difference: Long('196')
+  }
+]
+
+
+
+db.students.aggregate([{$project:{name:1,dob:1,difference:{$dateDiff:{startDate:"$dob",endDate:ISODate("2025-12-31T00:00:00Z"),unit:"day"}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    difference: Long('6560')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    difference: Long('5996')
+  }
+]
+
+
+		$dateFromParts, 
+
+db.students.aggregate([{$project:{name:1,dob:1,constructedDate:{$dateFromParts:{year:2025,month:1,day:7,hour:16,minute:45,second:56,millisecond:456}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    constructedDate: ISODate('2025-01-07T16:45:56.456Z')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    constructedDate: ISODate('2025-01-07T16:45:56.456Z')
+  }
+]
+
+
+		$dateToParts, 
+
+ db.students.aggregate([{$project:{name:1,dob:1,deriveddate:{$dateToParts:{date:"$dob"}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    deriveddate: {
+      year: 2008,
+      month: 1,
+      day: 15,
+      hour: 8,
+      minute: 15,
+      second: 39,
+      millisecond: 789
+    }
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    deriveddate: {
+      year: 2009,
+      month: 8,
+      day: 1,
+      hour: 5,
+      minute: 30,
+      second: 10,
+      millisecond: 125
+    }
+  }
+]
+
+		$dateTrunc, 
+
+db.students.aggregate([{$project:{name:1,dob:1,deriveddate:{$dateTrunc:{date:"$dob",unit:"month"}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    deriveddate: ISODate('2008-01-01T00:00:00.000Z')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    deriveddate: ISODate('2009-08-01T00:00:00.000Z')
+  }
+]
+
+
+		$dateFromString, 
+
+		$dateToString, 
+
+db.students.aggregate([{$project:{name:1,dob:1,date:{$dateToString:{date:"$dob",format:"%d-%b-%Y"}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    date: '15-Jan-2008'
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    date: '01-Aug-2009'
+  }
+]
+
+
+		$toDate, 
+
+db.students.aggregate([{$project:{name:1,dob:1,date:{$toDate:1972531200000}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    date: ISODate('2032-07-04T05:20:00.000Z')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    date: ISODate('2032-07-04T05:20:00.000Z')
+  }
+]
+
+
+		$isoDayOfWeek, 
+
+db.students.aggregate([{$project:{name:1,dob:1,isodayofweek:{$isoDayOfWeek:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    isodayofweek: 2
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    isodayofweek: 6
+  }
+]
+
+
+		$isoWeek, 
+
+db.students.aggregate([{$project:{name:1,dob:1,isoweek:{$isoWeek:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    isoweek: 3
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    isoweek: 31
+  }
+]
+
+
+		$isoWeekYear
+
+db.students.aggregate([{$project:{name:1,dob:1,isoweekyear:{$isoWeekYear:"$dob"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    dob: ISODate('2008-01-15T08:15:39.789Z'),
+    isoweekyear: Long('2008')
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    dob: ISODate('2009-08-01T05:30:10.125Z'),
+    isoweekyear: Long('2009')
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Array Operators:
+
+
+	$arrayElemAt, 
+
+db.students.aggregate([{$project:{selecthobby:{$arrayElemAt:["$hobby",1]}}}])
+[
+  { _id: 1, selecthobby: 'travel' },
+  { _id: 3, selecthobby: 'travel' },
+  { _id: 2, selecthobby: 'sport' }
+]
+
+	$firstN, 
+
+db.students.aggregate([{$project:{tophobby:{$firstN:{input:"$hobby",n:2}}}}])
+[
+  { _id: 1, tophobby: [ 'music', 'travel' ] },
+  { _id: 3, tophobby: [ 'music', 'travel' ] },
+  { _id: 2, tophobby: [ 'book', 'sport' ] }
+]
+
+
+	$lastN, 
+
+db.students.aggregate([{$project:{lasthobby:{$lastN:{input:"$hobby",n:2}}}}])
+[
+  { _id: 1, lasthobby: [ 'travel', 'dance' ] },
+  { _id: 3, lasthobby: [ 'travel', 'dance' ] },
+  { _id: 2, lasthobby: [ 'sport', 'dance' ] }
+]
+
+
+	$maxN, 
+
+db.students.aggregate([
+...   {
+...     $project: {
+...       max: {
+...         $maxN: {
+...           input: { $ifNull: ["$marks", []] },
+...           n: 2
+...         }
+...       }
+...     }
+...   }
+... ])
+...
+[
+  { _id: 1, max: [ 78, 30 ] },
+  { _id: 3, max: [] },
+  { _id: 2, max: [] }
+]
+
+
+	$minN,
+
+db.students.aggregate([{$project:{min:{$minN:{input:{$ifNull:["$marks",[]]},n:2}}}}])
+[
+  { _id: 1, min: [ 5, 10 ] },
+  { _id: 3, min: [] },
+  { _id: 2, min: [] }
+]
+
+ 
+	$slice, 
+
+db.students.aggregate([{$project:{hobby:{$slice:["$hobby",0,1]}}}])
+[
+  { _id: 1, hobby: [ 'music' ] },
+  { _id: 3, hobby: [ 'music' ] },
+  { _id: 2, hobby: [ 'book' ] }
+]
+
+	$sortArray, 
+
+db.students.aggregate([{$project:{hobby:{$sortArray:{input:"$hobby",sortBy:-1}}}}])
+[
+  { _id: 1, hobby: [ 'travel', 'music', 'dance' ] },
+  { _id: 3, hobby: [ 'travel', 'music', 'dance' ] },
+  { _id: 2, hobby: [ 'sport', 'dance', 'book' ] }
+]
+school> db.students.aggregate([{$project:{hobby:{$sortArray:{input:"$hobby",sortBy:1}}}}])
+[
+  { _id: 1, hobby: [ 'dance', 'music', 'travel' ] },
+  { _id: 3, hobby: [ 'dance', 'music', 'travel' ] },
+  { _id: 2, hobby: [ 'book', 'dance', 'sport' ] }
+]
+
+
+	$reverseArray,
+
+db.students.aggregate([{$project:{hobby:{$reverseArray:"$hobby"}}}])
+[
+  { _id: 1, hobby: [ 'dance', 'travel', 'music' ] },
+  { _id: 3, hobby: [ 'dance', 'travel', 'music' ] },
+  { _id: 2, hobby: [ 'dance', 'sport', 'book' ] }
+]
+
+ 
+	$size, 
+
+db.students.aggregate([{$project:{hobby:{$size:"$hobby"}}}]) 
+[ { _id: 1, hobby: 3 }, { _id: 3, hobby: 3 }, { _id: 2, hobby: 3 } ]
+school>
+
+
+	$in, 
+
+
+db.students.aggregate([{$project:{name:1,hobby:1,hobby:{$in:["test","$hobby"]}}}])
+[
+  { _id: 1, name: 'isha', hobby: false },
+  { _id: 3, name: 'nisha', hobby: false },
+  { _id: 2, name: 'lisha', hobby: false }
+]
+school> db.students.aggregate([{$project:{name:1,hobby:1,hobby:{$in:["music","$hobby"]}}}])
+[
+  { _id: 1, name: 'isha', hobby: true },
+  { _id: 3, name: 'nisha', hobby: true },
+  { _id: 2, name: 'lisha', hobby: false }
+]
+
+
+	$indexOfArray, 
+
+db.students.aggregate([{$project:{name:1,hobby:1,hobby:{$indexOfArray:["$hobby","music"]}}}])
+[
+  { _id: 1, name: 'isha', hobby: 0 },
+  { _id: 3, name: 'nisha', hobby: 0 },
+  { _id: 2, name: 'lisha', hobby: -1 }
+]
+school> db.students.aggregate([{$project:{name:1,hobby:1,hobby:{$indexOfArray:["$hobby","dance"]}}}])
+[
+  { _id: 1, name: 'isha', hobby: 2 },
+  { _id: 3, name: 'nisha', hobby: 2 },
+  { _id: 2, name: 'lisha', hobby: 2 }
+]
+
+
+	$isArray, 
+
+db.students.aggregate([{$project:{name:1,hobby:1,isarray:{$isArray:"$hobby"}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    isarray: true
+  },
+  {
+    _id: 3,
+    name: 'nisha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    isarray: true
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    hobby: [ 'book', 'sport', 'dance' ],
+    isarray: true
+  }
+]
+
+
+	$map, 
+
+ db.students.aggregate([{$project:{name:1,hobby:1,uperarray:{$map:{input:"$hobby",as:"hobby",in:{$toUpper:"$$hobby"}}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    uperarray: [ 'MUSIC', 'TRAVEL', 'DANCE' ]
+  },
+  {
+    _id: 3,
+    name: 'nisha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    uperarray: [ 'MUSIC', 'TRAVEL', 'DANCE' ]
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    hobby: [ 'book', 'sport', 'dance' ],
+    uperarray: [ 'BOOK', 'SPORT', 'DANCE' ]
+  }
+]
+
+
+	$filter, 
+	$reduce, 
+
+db.students.aggregate([{$project:{name:1,hobby:1,uperarray:{$reduce:{input:"$hobby",initialValue:"",in:{$concat:["$$value","$$this"]}}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    uperarray: 'musictraveldance'
+  },
+  {
+    _id: 3,
+    name: 'nisha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    uperarray: 'musictraveldance'
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    hobby: [ 'book', 'sport', 'dance' ],
+    uperarray: 'booksportdance'
+  }
+]
+
+	$range, 
+
+ol> db.students.aggregate([{$project:{name:1,hobby:1,hobby:{$range:[1,2]}}}])
+[
+  { _id: 1, name: 'isha', hobby: [ 1 ] },
+  { _id: 3, name: 'nisha', hobby: [ 1 ] },
+  { _id: 2, name: 'lisha', hobby: [ 1 ] }
+]
+
+
+	$concatArrays, 
+
+db.students.aggregate([{$project:{name:1,hobby:1,hobbies:{$concatArrays:["$hobby","$hobby"]}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    hobbies: [ 'music', 'travel', 'dance', 'music', 'travel', 'dance' ]
+  },
+  {
+    _id: 3,
+    name: 'nisha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    hobbies: [ 'music', 'travel', 'dance', 'music', 'travel', 'dance' ]
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    hobby: [ 'book', 'sport', 'dance' ],
+    hobbies: [ 'book', 'sport', 'dance', 'book', 'sport', 'dance' ]
+  }
+]
+
+
+	$zip,
+
+ db.students.aggregate([{$project:{name:1,hobby:1,hobbies:{$zip:{inputs:["$hobby","$hobby"]}}}}])
+[
+  {
+    _id: 1,
+    name: 'isha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    hobbies: [
+      [ 'music', 'music' ],
+      [ 'travel', 'travel' ],
+      [ 'dance', 'dance' ]
+    ]
+  },
+  {
+    _id: 3,
+    name: 'nisha',
+    hobby: [ 'music', 'travel', 'dance' ],
+    hobbies: [
+      [ 'music', 'music' ],
+      [ 'travel', 'travel' ],
+      [ 'dance', 'dance' ]
+    ]
+  },
+  {
+    _id: 2,
+    name: 'lisha',
+    hobby: [ 'book', 'sport', 'dance' ],
+    hobbies: [ [ 'book', 'book' ], [ 'sport', 'sport' ], [ 'dance', 'dance' ] ]
+  }
+]
+
+ 
+	$arrayToObject, 
+
+db.students.aggregate([{$project:{name:1,hobby:1,hobbies:{$arrayToObject:"$hobby"}}}])
+
+
+	$objectToArray
+
+
+db.students.aggregate([{$project:{name:1,hobby:1,hobbies:{$objectToArray:"$hobby"}}}])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Type Operators:
+
+	
+	$toString
+
+db.students.aggregate([{$project:{str:{$toString:"$point"}}}])
+[ { _id: 1, str: '10' }, { _id: 2, str: '10' } ]
+
+
+	$toInt, 
+
+db.students.aggregate([{$project:{intvalue:{$toInt:"$age"}}}])
+[ { _id: 1, intvalue: 25 }, { _id: 2, intvalue: 21 } ]
+
+	$toLong, 
+
+db.students.aggregate([{$project:{longvalue:{$toLong:"$age"}}}])
+[
+  { _id: 1, longvalue: Long('25') },
+  { _id: 2, longvalue: Long('21') }
+]
+
+
+	$toDouble, 
+
+db.students.aggregate([{$project:{doublevalue:{$toDouble:"$age"}}}])
+[ { _id: 1, doublevalue: 25 }, { _id: 2, doublevalue: 21 } ]
+
+
+	$toDecimal, 
+
+ db.students.aggregate([{$project:{decimalevalue:{$toDecimal:"$age"}}}])
+[
+  { _id: 1, decimalevalue: Decimal128('25') },
+  { _id: 2, decimalevalue: Decimal128('21') }
+]
+
+
+	$toBool, 
+
+db.students.aggregate([{$project:{boolevalue:{$toBool:"$age"}}}])
+[ { _id: 1, boolevalue: true }, { _id: 2, boolevalue: true } ]
+
+
+	$toDate, 
+	$toObjectId,
+
+ db.students.aggregate([{$project:{str:{$toObjectId:"65d0834b5f4c6a5e4f8a1b2c"}}}])
+[
+  { _id: 1, str: ObjectId('65d0834b5f4c6a5e4f8a1b2c') },
+  { _id: 2, str: ObjectId('65d0834b5f4c6a5e4f8a1b2c') }
+]
+
+ 
+	$convert, 
+
+db.students.aggregate([{$project:{convert:{$convert:{input:"$age",to:"int"}}}}])
+[ { _id: 1, convert: 25 }, { _id: 2, convert: 21 } ]
+
+
+	$type, 
+
+db.students.aggregate([{$project:{convert:{$type:"$age"}}}])
+[ { _id: 1, convert: 'string' }, { _id: 2, convert: 'string' } ]
+
+
+	$isNumber
+
+db.students.aggregate([{$project:{convert:{$isNumber:"$point"}}}])
+[ { _id: 1, convert: true }, { _id: 2, convert: true } ]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Conditional Operators:
+
+
+	$cond, 
+
+db.students.aggregate([{$project:{name:1,point:1,pointc:{$cond:{if:{$gt:["$point",50]},then:"good",else:"notgood"}}}}])
+[
+  { _id: 1, name: 'ishu', point: 10, pointc: 'notgood' },
+  { _id: 2, name: 'lishu', point: 56, pointc: 'good' }
+]
+
+
+db.students.aggregate([{$project:{name:1,point:1,pointc:{$cond:{if:{$eq:["$age",25]},then:"you can job",else:"to be retired"}}}}])
+[
+  { _id: 1, name: 'ishu', point: 10, pointc: 'you can job' },
+  { _id: 2, name: 'lishu', point: 56, pointc: 'to be retired' }
+]
+
+
+	$ifNull, 
+
+
+db.students.aggregate([{$project:{name:1,email:{$ifNull:["$email","No email"]}}}])
+[
+  { _id: 1, name: 'ishu', email: '' },
+  { _id: 2, name: 'lishu', email: 'No email' }
+
+
+
+	$switch
+
+
+db.students.aggregate([{$project:{name:1,point:1,grade:{$switch:{branches:[{case:{$lte:["$point",25]},then:"not so good"},{case:{$gte:["$point",25]},then:"so good"}],default:"fail"}}}}])
+[
+  { _id: 1, name: 'ishu', point: 10, grade: 'not so good' },
+  { _id: 2, name: 'lishu', point: 56, grade: 'so good' }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Capped Collection:
+
+
+
+db.createCollection("log",{capped:true,size:51200,max:3})
+{ ok: 1 }
+school> db.log.insertOne({message:"m1"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('68341d4a122daa28bcb5f899')
+}
+school> db.log.find()
+[ { _id: ObjectId('68341d4a122daa28bcb5f899'), message: 'm1' } ]
+school> db.log.insertOne({message:"m2"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('68341d6b122daa28bcb5f89a')
+}
+school> db.log.find()
+[
+  { _id: ObjectId('68341d4a122daa28bcb5f899'), message: 'm1' },
+  { _id: ObjectId('68341d6b122daa28bcb5f89a'), message: 'm2' }
+]
+school> db.log.insertOne({message:"m3"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('68341d71122daa28bcb5f89b')
+}
+school> db.log.insertOne({message:"m4"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('68341d75122daa28bcb5f89c')
+}
+school> db.log.find()
+[
+  { _id: ObjectId('68341d6b122daa28bcb5f89a'), message: 'm2' },
+  { _id: ObjectId('68341d71122daa28bcb5f89b'), message: 'm3' },
+  { _id: ObjectId('68341d75122daa28bcb5f89c'), message: 'm4' }
+]
+school> db.log.find().sort({$natural:-1})
+[
+  { _id: ObjectId('68341d75122daa28bcb5f89c'), message: 'm4' },
+  { _id: ObjectId('68341d71122daa28bcb5f89b'), message: 'm3' },
+  { _id: ObjectId('68341d6b122daa28bcb5f89a'), message: 'm2' }
+]
+school> db.log.insertOne({message:"m5"})
+{
+  acknowledged: true,
+  insertedId: ObjectId('68341e0d122daa28bcb5f89d')
+}
+school> db.log.find()
+[
+  { _id: ObjectId('68341d71122daa28bcb5f89b'), message: 'm3' },
+  { _id: ObjectId('68341d75122daa28bcb5f89c'), message: 'm4' },
+  { _id: ObjectId('68341e0d122daa28bcb5f89d'), message: 'm5' }
+]
+
+
+
+
+
+	db.log.find().sort({$natural:-1})
+[
+  { _id: ObjectId('68341d75122daa28bcb5f89c'), message: 'm4' },
+  { _id: ObjectId('68341d71122daa28bcb5f89b'), message: 'm3' },
+  { _id: ObjectId('68341d6b122daa28bcb5f89a'), message: 'm2' }
+]
+
+
+
+
+	 db.log.isCapped()
+true
+school> show collections
+BE_std
+c_std
+library
+log
+personal
+std_info
+students
+
+
+school> db.students.isCapped()
+false
+
+
+
+
+ db.students.isCapped()
+false
+school> db.runCommand({convertToCapped:"students",size:51200,max:1})
+{ ok: 1 }
+school> db.students.isCapped()
+true
+school> db.students.find()()
+TypeError: db.students.find() is not a function
+school> db.students.find()
+[
+  {
+    _id: 1,
+    name: 'ishu',
+    age: 25,
+    marks: [ 10, 20, 60 ],
+    point: 10,
+    dob: ISODate('2005-03-15T00:00:00.000Z'),
+    email: ''
+  },
+  {
+    _id: 2,
+    name: 'lishu',
+    age: 56,
+    marks: [ 10, 20, 60 ],
+    point: 56,
+    dob: ISODate('2005-03-15T00:00:00.000Z')
+  }
+]
+
+:::max is not work in already existing collection
+
+
+db.runCommand({collMod:"log",cappedMax:7})
+{ ok: 1 }
+
+
+db.log.find()
+[
+  { _id: ObjectId('68341e0d122daa28bcb5f89d'), message: 'm5' },
+  { _id: ObjectId('68341fd3122daa28bcb5f89e'), message: 'm6' },
+  { _id: ObjectId('68341fd9122daa28bcb5f89f'), message: 'm7' },
+  { _id: ObjectId('68341fdc122daa28bcb5f8a0'), message: 'm1' },
+  { _id: ObjectId('68341fe0122daa28bcb5f8a1'), message: 'm2' },
+  { _id: ObjectId('68341fea122daa28bcb5f8a2'), message: 'm8' },
+  { _id: ObjectId('68341fee122daa28bcb5f8a3'), message: 'm9' }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ Indexes:
+
+	Single field index, 
+	Compound indexes, 
+	Unique Index, 
+
+db.students.insertOne({_id:3,name:"ishu"})
+{ acknowledged: true, insertedId: 3 }
+school> db.students.createIndex({name:1},{unique:true})
+MongoServerError[DuplicateKey]: Index build failed: 0039d8b7-dd02-49b7-9e81-33562ffe6e90: Collection school.students ( 7f3c32f9-8b2f-427f-8b32-ee4ece2f6c65 ) :: caused by :: E11000 duplicate key error collection: school.students index: name_1 dup key: { name: "ishu" }
+school>
+
+
+	Text indexes,
+
+db.students.find({$text:{$search:"ishu"}})
+[
+  { _id: 3, name: 'ishu' },
+  {
+    _id: 1,
+    name: 'ishu',
+    age: 25,
+    marks: [ 10, 20, 60 ],
+    point: 10,
+    dob: ISODate('2005-03-15T00:00:00.000Z'),
+    email: ''
+  }
+]
+
+ 
+	Wildcard Index 
+
+
+db.students.find().explain("executionStats")
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'school.students',
+    parsedQuery: {},
+    indexFilterSet: false,
+    queryHash: '8F2383EE',
+    planCacheShapeHash: '8F2383EE',
+    planCacheKey: '7DF350EE',
+    optimizationTimeMillis: 0,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: { isCached: false, stage: 'COLLSCAN', direction: 'forward' },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 2,
+    executionTimeMillis: 0,
+    totalKeysExamined: 0,
+    totalDocsExamined: 2,
+    executionStages: {
+      isCached: false,
+      stage: 'COLLSCAN',
+      nReturned: 2,
+      executionTimeMillisEstimate: 0,
+      works: 3,
+      advanced: 2,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      direction: 'forward',
+      docsExamined: 2
+    }
+  },
+  queryShapeHash: '7DF9A272833F187426F52567DCF07B5535BE19DA3E827210C2DE92F0D7C78481',
+  command: { find: 'students', filter: {}, '$db': 'school' },
+  serverInfo: {
+    host: 'LAPTOP-0DV9CU80',
+    port: 27017,
+    version: '8.0.8',
+    gitVersion: '7f52660c14217ed2c8d3240f823a2291a4fe6abd'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+
+
+
+
+db.students.createIndex({name:-1})
+name_-1
+school> db.students.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { name: -1 }, name: 'name_-1' }
+]
+school> db.students.find({name:"ishu"}).explain("executionStats")
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'school.students',
+    parsedQuery: { name: { '$eq': 'ishu' } },
+    indexFilterSet: false,
+    queryHash: '544F3E5C',
+    planCacheShapeHash: '544F3E5C',
+    planCacheKey: 'EEE0759C',
+    optimizationTimeMillis: 8,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: { name: -1 },
+        indexName: 'name_-1',
+        isMultiKey: false,
+        multiKeyPaths: { name: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: { name: [ '["ishu", "ishu"]' ] }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 1,
+    executionTimeMillis: 24,
+    totalKeysExamined: 1,
+    totalDocsExamined: 1,
+    executionStages: {
+      isCached: false,
+      stage: 'FETCH',
+      nReturned: 1,
+      executionTimeMillisEstimate: 24,
+      works: 2,
+      advanced: 1,
+      needTime: 0,
+      needYield: 0,
+      saveState: 1,
+      restoreState: 1,
+      isEOF: 1,
+      docsExamined: 1,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 1,
+        executionTimeMillisEstimate: 24,
+        works: 2,
+        advanced: 1,
+        needTime: 0,
+        needYield: 0,
+        saveState: 1,
+        restoreState: 1,
+        isEOF: 1,
+        keyPattern: { name: -1 },
+        indexName: 'name_-1',
+        isMultiKey: false,
+        multiKeyPaths: { name: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: { name: [ '["ishu", "ishu"]' ] },
+        keysExamined: 1,
+        seeks: 1,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  queryShapeHash: '61EF2197747739FAB45926D45CAE6F1E8A07DC4847027B8CF1E4AFDF426D2B56',
+  command: { find: 'students', filter: { name: 'ishu' }, '$db': 'school' },
+  serverInfo: {
+    host: 'LAPTOP-0DV9CU80',
+    port: 27017,
+    version: '8.0.8',
+    gitVersion: '7f52660c14217ed2c8d3240f823a2291a4fe6abd'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+
+
+ db.students.dropIndex("name_-1")
+{ nIndexesWas: 2, ok: 1 }
+school> db.students.getIndexes()
+[ { v: 2, key: { _id: 1 }, name: '_id_' } ]
+
+
+db.students.getIndexes()
+[
+  { v: 2, key: { _id: 1 }, name: '_id_' },
+  { v: 2, key: { name: -1, age: 1 }, name: 'name_-1_age_1' },
+  {
+    v: 2,
+    key: { _fts: 'text', _ftsx: 1 },
+    name: 'name_text',
+    weights: { name: 1 },
+    default_language: 'english',
+    language_override: 'language',
+    textIndexVersion: 3
+  }
+]
+
+
+
+ db.students.find({name:"ishu"}).explain("executionStats")
+{
+  explainVersion: '1',
+  queryPlanner: {
+    namespace: 'school.students',
+    parsedQuery: { name: { '$eq': 'ishu' } },
+    indexFilterSet: false,
+    queryHash: '544F3E5C',
+    planCacheShapeHash: '544F3E5C',
+    planCacheKey: 'EEE0759C',
+    optimizationTimeMillis: 23,
+    maxIndexedOrSolutionsReached: false,
+    maxIndexedAndSolutionsReached: false,
+    maxScansToExplodeReached: false,
+    prunedSimilarIndexes: false,
+    winningPlan: {
+      isCached: false,
+      stage: 'FETCH',
+      inputStage: {
+        stage: 'IXSCAN',
+        keyPattern: { '$_path': 1, name: 1 },
+        indexName: '$**_1',
+        isMultiKey: false,
+        multiKeyPaths: { '$_path': [], name: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          '$_path': [ '["name", "name"]' ],
+          name: [ '["ishu", "ishu"]' ]
+        }
+      }
+    },
+    rejectedPlans: []
+  },
+  executionStats: {
+    executionSuccess: true,
+    nReturned: 2,
+    executionTimeMillis: 23,
+    totalKeysExamined: 2,
+    totalDocsExamined: 2,
+    executionStages: {
+      isCached: false,
+      stage: 'FETCH',
+      nReturned: 2,
+      executionTimeMillisEstimate: 0,
+      works: 3,
+      advanced: 2,
+      needTime: 0,
+      needYield: 0,
+      saveState: 0,
+      restoreState: 0,
+      isEOF: 1,
+      docsExamined: 2,
+      alreadyHasObj: 0,
+      inputStage: {
+        stage: 'IXSCAN',
+        nReturned: 2,
+        executionTimeMillisEstimate: 0,
+        works: 3,
+        advanced: 2,
+        needTime: 0,
+        needYield: 0,
+        saveState: 0,
+        restoreState: 0,
+        isEOF: 1,
+        keyPattern: { '$_path': 1, name: 1 },
+        indexName: '$**_1',
+        isMultiKey: false,
+        multiKeyPaths: { '$_path': [], name: [] },
+        isUnique: false,
+        isSparse: false,
+        isPartial: false,
+        indexVersion: 2,
+        direction: 'forward',
+        indexBounds: {
+          '$_path': [ '["name", "name"]' ],
+          name: [ '["ishu", "ishu"]' ]
+        },
+        keysExamined: 2,
+        seeks: 1,
+        dupsTested: 0,
+        dupsDropped: 0
+      }
+    }
+  },
+  queryShapeHash: '61EF2197747739FAB45926D45CAE6F1E8A07DC4847027B8CF1E4AFDF426D2B56',
+  command: { find: 'students', filter: { name: 'ishu' }, '$db': 'school' },
+  serverInfo: {
+    host: 'LAPTOP-0DV9CU80',
+    port: 27017,
+    version: '8.0.8',
+    gitVersion: '7f52660c14217ed2c8d3240f823a2291a4fe6abd'
+  },
+  serverParameters: {
+    internalQueryFacetBufferSizeBytes: 104857600,
+    internalQueryFacetMaxOutputDocSizeBytes: 104857600,
+    internalLookupStageIntermediateDocumentMaxSizeBytes: 104857600,
+    internalDocumentSourceGroupMaxMemoryBytes: 104857600,
+    internalQueryMaxBlockingSortMemoryUsageBytes: 104857600,
+    internalQueryProhibitBlockingMergeOnMongoS: 0,
+    internalQueryMaxAddToSetBytes: 104857600,
+    internalDocumentSourceSetWindowFieldsMaxMemoryBytes: 104857600,
+    internalQueryFrameworkControl: 'trySbeRestricted',
+    internalQueryPlannerIgnoreIndexWithCollationForRegex: 1
+  },
+  ok: 1
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Import JSON :
+
+ mongoimport "C:\std.json" -d school -c testing --jsonArray 
+
+C:\Users\HP>mongoimport --file="C:\std.json" --db=school --collection=testing --jsonArray
+2025-05-26T14:33:32.192+0530    connected to: mongodb://localhost/
+2025-05-26T14:33:32.336+0530    4 document(s) imported successfully. 0 document(s) failed to import.
+
+
+
+ use school
+switched to db school
+school> show collections
+BE_std
+c_std
+library
+log
+personal
+std_info
+students
+testing
+school> db.testing.find()
+[
+  { _id: ObjectId('68342e648ef441f468d622b0'), name: 'isha', age: 28 },
+  { _id: ObjectId('68342e648ef441f468d622b1'), name: 'priya', age: 25 },
+  {
+    _id: ObjectId('68342e648ef441f468d622b2'),
+    name: 'pradeep',
+    age: 32
+  },
+  { _id: ObjectId('68342e648ef441f468d622b3'), name: 'priya', age: 25 }
+]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Database Backup and Restore:
+
+
+mongodump -o c:\backup
+mongodump -d school -c students -o c:\backup
+mongodump -d school -o c:\backup
+
+
+
+mongorestore -d school c:\backup\school
+mongorestore -d school -c students c:\backup\school\students.bson
+mongorestore --dir c:\backup
+
+
+mongorestore --drop --dir C:\backup
+
+
+
+
+
+
+
+
+
+
+
+
+
+Authentication & User Management:
+
+
+	use create new user, db.createUser()
+
+db.createUser({user:"admin",pwd:"admin123",roles  :[{role:"root",db:"admin"}]})
+
+
+	update user,         db.updateUser()
+
+
+db.updateUser("developer",{roles  :[{role:"readWrite",db:"school"}]})
+
+
+	drop user,           db.dropUser()   ,db.dropAllUser()
+
+
+ db.dropAllUsers()
+{ n: 1, ok: 1 }
+ db.dropUser("developer")
+{ ok: 1 }
+admin> db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('e29562bf-bdec-484f-b1af-38e10bcd139f'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+
+
+	changeUserPassword,  db.changeUserPassword()
+
+db.changeUserPassword("developer","devp123")
+
+
+	getUser,              db.getUser()  , db.getUsers()
+
+db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('e29562bf-bdec-484f-b1af-38e10bcd139f'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    },
+    {
+      _id: 'admin.developer',
+      userId: UUID('2ca5dd00-b934-4bdd-b5d3-282f85fe5430'),
+      user: 'developer',
+      db: 'admin',
+      roles: [ { role: 'read', db: 'school' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+
+
+db.getUser("developer")
+{
+  _id: 'admin.developer',
+  userId: UUID('2ca5dd00-b934-4bdd-b5d3-282f85fe5430'),
+  user: 'developer',
+  db: 'admin',
+  roles: [ { role: 'read', db: 'school' } ],
+  mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+}
+
+
+	grantRolesToUser,     db.grantRolesToUser()
+
+ db.grantRolesToUser("developer",[{role:"dbOwner",db:"school"}])
+{ ok: 1 }
+
+
+
+	revokeRolesFromUser,  db.revokeRolesFromUser()
+
+db.revokeRolesFromUser("developer",[{role:"dbOwner",db:"school"}])
+{ ok: 1 }
+
+
+	auth                  db.auth()
+
+db.auth("admin","admin123")
+db.auth("developer","dev123")
+
+after change
+db.auth("developer","devp123")
+
+
+Built-in Roles:
+
+	read   :  read data only
+	readWrite : read and write data
+	dbAdmin : allow user to perform admin task likr indexing schema operations
+	userAdmin  : manage users and roles within the db
+	dbOwner: combine of abow all
+
+	backup  : data backup
+	restore : restore data from backup
+
+	user administration roles:
+		userAdminAnyDatabase : manage users on any db
+		dbAdminAnyDatabase  : provides dbAdmin privileges for all dbs
+
+
+	Superuser Roles:
+		root : full administrative access to all db ,user,and op (superuser role)
+
+	read-only roles:
+		readAnyDatabase: oly read access
+
+
+
+
+
+test> show dbs
+
+test> use school
+switched to db school
+
+school> show collections
+MongoServerError[Unauthorized]: not authorized on school to execute command { listCollections: 1, filter: {}, cursor: {}, nameOnly: true, authorizedCollections: false, lsid: { id: UUID("c27d222e-f3f9-439a-b606-8f6e96e4b2da") }, $db: "school" }
+
+school> use admin
+switched to db admin
+
+admin> 
+db.createUser({user:"admin",pwd:"admin123",role:[{role:"root",db:"admin"}]})
+MongoshInvalidInputError: [COMMON-10001] Missing required property: "roles"
+
+admin> db.createUser({user:"admin",pwd:"admin123",roles:[{role:"root",db:"admin"}]})
+{ ok: 1 }
+
+admin> show collections
+MongoServerError[Unauthorized]: Command listCollections requires authentication
+
+admin> ab.auth("admin","admin123")
+ReferenceError: ab is not defined
+admin> db.auth("admin","admin123")
+{ ok: 1 }
+
+admin> show collections
+system.users
+system.version
+
+admin> use school
+switched to db school
+
+school> show collections
+BE_std
+c_std
+library
+log
+personal
+std_info
+students
+testing
+
+
+db.createUser({user:"developer",pwd:"dev123",roles:[{role:"read",db:"school"}]})
+{ ok: 1 }
+admin> db.auth("developer","dev123")
+{ ok: 1 }
+
+
+ db.auth("admin","admin123")
+{ ok: 1 }
+admin> db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('e29562bf-bdec-484f-b1af-38e10bcd139f'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    },
+    {
+      _id: 'admin.developer',
+      userId: UUID('2ca5dd00-b934-4bdd-b5d3-282f85fe5430'),
+      user: 'developer',
+      db: 'admin',
+      roles: [ { role: 'read', db: 'school' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+
+
+
+db.auth("developer","dev123")
+{ ok: 1 }
+admin> use school
+switched to db school
+school> show collections
+BE_std
+c_std
+library
+log
+personal
+std_info
+students
+testing
+school> db.studnts.find()
+
+school> db.std_info.find()
+
+school> db.BE_std.find()
+[
+  { _id: 1, city: 'ank', age: 20, course: 'BE', name: 'Harsh' },
+  { _id: 2, city: 'ank', age: 45, course: 'BE', name: 'nisha' },
+  { _id: 3, city: 'ank', age: 25, course: 'BE', name: 'nitiksha' }
+]
+school> db.BE_std.insertOne({_id:4})
+MongoServerError[Unauthorized]: not authorized on school to execute command { insert: "BE_std", documents: [ { _id: 4 } ], ordered: true, lsid: { id: UUID("8bd92d19-bde3-4481-8320-0c1f5c5d679b") }, $db: "school" }
+school>
+
+
+ db.updateUser("developer",{roles  :[{role:"readWrite",db:"school"}]})
+{ ok: 1 }
+admin> db.auth("developer","dev123")
+{ ok: 1 }
+admin> use school
+switched to db school
+school> show collections
+BE_std
+c_std
+library
+log
+personal
+std_info
+students
+testing
+school> db.BE_std.insertOne({_id:4})
+{ acknowledged: true, insertedId: 4 }
+school>
+
+use admin
+switched to db admin
+admin> db.auth("admin","admin123")
+{ ok: 1 }
+admin> db.changeUserPassword("developer","devp123")
+{ ok: 1 }
+
+
+ db.auth("developer","devp123")
+{ ok: 1 }
+admin> use school
+switched to db school
+school> show collections
+BE_std
+c_std
+library
+log
+personal
+std_info
+students
+testing
+school> db.BE_std.insertOne({_id:5})
+{ acknowledged: true, insertedId: 5 }
+school> db.BE_std.find()
+[
+  { _id: 1, city: 'ank', age: 20, course: 'BE', name: 'Harsh' },
+  { _id: 2, city: 'ank', age: 45, course: 'BE', name: 'nisha' },
+  { _id: 3, city: 'ank', age: 25, course: 'BE', name: 'nitiksha' },
+  { _id: 4 },
+  { _id: 5 }
+]
+
+
+use admin
+switched to db admin
+admin> db.auth("admin","admin123")
+{ ok: 1 }
+admin> db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('e29562bf-bdec-484f-b1af-38e10bcd139f'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    },
+    {
+      _id: 'admin.developer',
+      userId: UUID('2ca5dd00-b934-4bdd-b5d3-282f85fe5430'),
+      user: 'developer',
+      db: 'admin',
+      roles: [ { role: 'readWrite', db: 'school' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+admin> db.dropUser("developer")
+{ ok: 1 }
+admin> db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('e29562bf-bdec-484f-b1af-38e10bcd139f'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+admin> db.getAllUsers()
+TypeError: db.getAllUsers is not a function
+admin> db.dropAllUsers()
+{ n: 1, ok: 1 }
+admin> db.getUsers()
+MongoServerError[Unauthorized]: Command usersInfo requires authentication
+admin>
+
+
+ db.grantRolesToUser("developer",[{role:"dbOwner",db:"school"}])
+{ ok: 1 }
+admin> db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('3d89ecf9-aca7-4b7a-af20-e8e50274cad4'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    },
+    {
+      _id: 'admin.developer',
+      userId: UUID('2c048798-ee70-4696-bce1-7f3f9cdeb7b3'),
+      user: 'developer',
+      db: 'admin',
+      roles: [
+        { role: 'dbOwner', db: 'school' },
+        { role: 'readWrite', db: 'school' }
+      ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
+
+
+
+db.revokeRolesFromUser("developer",[{role:"dbOwner",db:"school"}])
+{ ok: 1 }
+admin> db.getUsers()
+{
+  users: [
+    {
+      _id: 'admin.admin',
+      userId: UUID('3d89ecf9-aca7-4b7a-af20-e8e50274cad4'),
+      user: 'admin',
+      db: 'admin',
+      roles: [ { role: 'root', db: 'admin' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    },
+    {
+      _id: 'admin.developer',
+      userId: UUID('2c048798-ee70-4696-bce1-7f3f9cdeb7b3'),
+      user: 'developer',
+      db: 'admin',
+      roles: [ { role: 'readWrite', db: 'school' } ],
+      mechanisms: [ 'SCRAM-SHA-1', 'SCRAM-SHA-256' ]
+    }
+  ],
+  ok: 1
+}
